@@ -1,0 +1,100 @@
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+class Bookmarks extends CI_Controller 
+{
+	protected $_editStatus = 'Operation complete.';
+	
+	public function __construct()
+	{
+		parent::__construct();
+		$this->load->helper('formd');
+		$this->load->library('form_validation');
+		$this->load->model('Bookmarks_model', 'bookmarks');
+	}
+
+	public function index()
+	{
+		if($this->_destroy())
+			$data['success'] = $this->_editStatus;
+			
+		$data['bookmarks'] = $this->bookmarks->all();
+		$this->load->view('bookmarks/index', $data);
+	}
+	
+	public function new_one()
+	{
+		if($this->_create())
+			$data['success'] = $this->_editStatus;
+			
+		$data['bookmarksDataTypes'] = $this->bookmarks->get_data_types();
+		$this->load->view('bookmarks/new_one', $data);
+	}
+	
+	protected function _create()
+	{
+		if($this->input->post('create'))
+			if($this->form_validation->run('bookmarks/_create'))
+			{	
+				unset($_POST['create']);
+				if($this->bookmarks->create($_POST))
+				{	
+					unset($_POST);
+					return TRUE;
+				}
+			}
+		return FALSE;
+	}
+	
+	public function show($id)
+	{
+		if($data['bookmarks'] = $this->bookmarks->find(array('id' => $id)))
+			$this->load->view('bookmarks/show', $data);
+		else
+			show_404(current_url());
+	}
+	
+	public function edit($id)
+	{
+		if($this->_update())
+			$data['success'] = $this->_editStatus;
+			
+		$data['bookmarksDataTypes'] = $this->bookmarks->get_data_types();
+		if($data['bookmarks'] = $this->bookmarks->find(array('id' => $id)))
+			$this->load->view('bookmarks/edit', $data);
+		else
+			show_404(current_url());
+	}
+	
+	protected function _update()
+	{
+		if($this->input->post('update'))
+			if($this->form_validation->run('bookmarks/_update'))
+			{	
+				unset($_POST['update']);
+				if($this->bookmarks->update($_POST))	
+				{	
+					unset($_POST);
+					return TRUE;
+				}
+			}
+		return FALSE;
+	}
+	
+	protected function _destroy()
+	{
+		if($this->input->post('delete'))
+			if($this->form_validation->run('bookmarks/_destroy'))
+			{
+				unset($_POST['delete']);
+				if($this->bookmarks->delete($_POST))	
+				{	
+					unset($_POST);
+					return TRUE;
+				}
+			}
+		return FALSE;
+	}
+}
+
+/* End of file bookmarks.php */
+/* Location: ./application/controllers/bookmarks.php */

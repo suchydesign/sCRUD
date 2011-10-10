@@ -1,0 +1,96 @@
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+class Books extends CI_Controller 
+{
+	protected $_editStatus = 'Operation complete.';
+	
+	public function __construct()
+    {
+    	
+        parent::__construct();
+		$this->output->enable_profiler(TRUE);
+		$this->load->helper('formd');
+		$this->load->library('form_validation');
+		$this->load->model('Books_model', 'books');
+    }
+
+	public function index()
+	{
+		if($this->_destroy())
+			$data['success'] = $this->_editStatus;
+		$data['books'] = $this->books->all();
+		$this->load->view('books/index', $data);
+	}
+	
+	public function new_one()
+	{
+		if($this->_create())
+			$data['success'] = $this->_editStatus;
+		$data['bookDataTypes'] = $this->books->get_data_types();
+		$this->load->view('books/new_one', $data);
+	}
+	
+	protected function _create()
+	{
+		if($this->input->post('create'))
+			if($this->form_validation->run())
+			{	
+				unset($_POST['create']);
+				if($this->books->create($_POST))
+				{	
+					unset($_POST);
+					return TRUE;
+				}
+			}
+		return FALSE;
+	}
+	
+	public function show($id)
+	{
+		$data['book'] = $this->books->find(array('id' => $id));
+		$this->load->view('books/show', $data);
+	}
+	
+	public function edit($id)
+	{
+		if($this->_update())
+			$data['success'] = $this->_editStatus;
+		$data['bookDataTypes'] = $this->books->get_data_types();
+		$data['book'] = $this->books->find(array('id' => $id));
+		$this->load->view('books/edit', $data);
+	}
+	
+	protected function _update()
+	{
+		if($this->input->post('update'))
+			if($this->form_validation->run())
+			{	
+				$this->session->set_flashdata('success', "kokocina");
+				unset($_POST['update']);
+				if($this->books->update($_POST))	
+				{	
+					unset($_POST);
+					return TRUE;
+				}
+			}
+		return FALSE;
+	}
+	
+	protected function _destroy()
+	{
+		if($this->input->post('delete'))
+			if($this->form_validation->run('books/_destroy'))
+			{	
+				unset($_POST['delete']);
+				if($this->books->delete($_POST))	
+				{	
+					unset($_POST);
+					return TRUE;
+				}
+			}
+		return FALSE;
+	}
+}
+
+/* End of file books.php */
+/* Location: ./application/controllers/books.php */

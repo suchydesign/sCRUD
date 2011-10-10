@@ -1,0 +1,48 @@
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+class Authors extends CI_Controller 
+{
+	
+	public function __construct()
+    {
+        parent::__construct();
+    }
+
+	public function index()
+	{
+		
+	}
+	
+	public function new_one()
+	{
+		
+	}
+	
+	private function create()
+	{
+		
+	}
+	
+	public function show($id)
+	{
+		
+	}
+	
+	public function edit($id)
+	{
+		
+	}
+	
+	private function update($id)
+	{
+		
+	}
+	
+	private function destroy($id)
+	{
+		
+	}
+}
+
+/* End of file authors.php */
+/* Location: ./application/controllers/authors.php */

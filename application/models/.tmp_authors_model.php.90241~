@@ -1,0 +1,14 @@
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+class Authors_model extends MY_Model 
+{
+	public function __construct()
+    {
+        parent::__construct();
+		$this->tableName = 'authors';
+		$this->_set_data_types();
+    }
+}
+
+/* End of file authors_model.php */
+/* Location: ./application/models/authors_model.php */

@@ -1,0 +1,78 @@
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+$config = array(
+                 'books/_update' => array(
+                                    array(
+                                            'field' => 'id',
+                                            'label' => 'ID',
+                                            'rules' => 'trim|required|numeric'
+                                         ),
+                                    array(
+                                            'field' => 'name',
+                                            'label' => 'Name',
+                                            'rules' => 'trim|required'
+                                         ),
+                                    array(
+                                            'field' => 'description',
+                                            'label' => 'Description',
+                                            'rules' => 'trim|required'
+                                         ),
+                                    array(
+                                            'field' => 'photo',
+                                            'label' => 'Photo',
+                                            'rules' => 'trim|required'
+                                         ),
+                                    array(
+                                            'field' => 'year',
+                                            'label' => 'Year',
+                                            'rules' => 'trim|required|integer'
+                                         ),
+                                    array(
+                                            'field' => 'authors_id',
+                                            'label' => 'Author ID',
+                                            'rules' => 'trim|required|integer'
+                                         ),
+                                    array(
+                                            'field' => 'publishers_id',
+                                            'label' => 'Publishers ID',
+                                            'rules' => 'trim|required|integer'
+                                         )
+                                    ),
+					'books/_create' => array(
+                                            'field' => 'name',
+                                            'label' => 'Name',
+                                            'rules' => 'trim|required'
+                                         ),
+                                    array(
+                                            'field' => 'description',
+                                            'label' => 'Description',
+                                            'rules' => 'trim|required'
+                                         ),
+                                    array(
+                                            'field' => 'photo',
+                                            'label' => 'Photo',
+                                            'rules' => 'trim|required'
+                                         ),
+                                    array(
+                                            'field' => 'year',
+                                            'label' => 'Year',
+                                            'rules' => 'trim|required|integer'
+                                         ),
+                                    array(
+                                            'field' => 'authors_id',
+                                            'label' => 'Author ID',
+                                            'rules' => 'trim|required|integer'
+                                         ),
+                                    array(
+                                            'field' => 'publishers_id',
+                                            'label' => 'Publishers ID',
+                                            'rules' => 'trim|required|integer'
+                                         ),
+					'books/_destroy' => array(
+                                    array(
+                                            'field' => 'id',
+                                            'label' => 'ID',
+                                            'rules' => 'trim|required|numeric'
+                                         )
+                                    )                         
+               );

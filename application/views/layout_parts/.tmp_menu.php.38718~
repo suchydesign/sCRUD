@@ -1,0 +1,8 @@
+	<li><?=anchor('scrud_generator', 'sCRUD Generator'); ?></li>
+	<li><?=anchor('authors', 'Authors'); ?></li>
+	<li><?=anchor('bookmarks', 'Bookmarks'); ?></li>
+	<li><?=anchor('books', 'Books'); ?></li>
+	<li><?=anchor('books_data', 'Books_data'); ?></li>
+	<li><?=anchor('books_has_tags', 'Books_has_tags'); ?></li>
+	<li><?=anchor('publishers', 'Publishers'); ?></li>
+	<li><?=anchor('tags', 'Tags'); ?></li>

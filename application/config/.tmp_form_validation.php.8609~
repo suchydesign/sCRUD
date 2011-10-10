@@ -1,0 +1,79 @@
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+$config['books/_update'] = array(
+                                    array(
+                                            'field' => 'id',
+                                            'label' => 'ID',
+                                            'rules' => 'trim|required|numeric'
+                                         ),
+                                    array(
+                                            'field' => 'name',
+                                            'label' => 'Name',
+                                            'rules' => 'trim|required'
+                                         ),
+                                    array(
+                                            'field' => 'description',
+                                            'label' => 'Description',
+                                            'rules' => 'trim|required'
+                                         ),
+                                    array(
+                                            'field' => 'photo',
+                                            'label' => 'Photo',
+                                            'rules' => 'trim|required'
+                                         ),
+                                    array(
+                                            'field' => 'year',
+                                            'label' => 'Year',
+                                            'rules' => 'trim|required|integer'
+                                         ),
+                                    array(
+                                            'field' => 'authors_id',
+                                            'label' => 'Author ID',
+                                            'rules' => 'trim|required|integer'
+                                         ),
+                                    array(
+                                            'field' => 'publishers_id',
+                                            'label' => 'Publishers ID',
+                                            'rules' => 'trim|required|integer'
+                                         )
+                                    );
+$config['books/_create'] = array(			
+									array(
+                                            'field' => 'name',
+                                            'label' => 'Name',
+                                            'rules' => 'trim|required'
+                                         ),
+                                    array(
+                                            'field' => 'description',
+                                            'label' => 'Description',
+                                            'rules' => 'trim|required'
+                                         ),
+                                    array(
+                                            'field' => 'photo',
+                                            'label' => 'Photo',
+                                            'rules' => 'trim|required'
+                                         ),
+                                    array(
+                                            'field' => 'year',
+                                            'label' => 'Year',
+                                            'rules' => 'trim|required|integer'
+                                         ),
+                                    array(
+                                            'field' => 'authors_id',
+                                            'label' => 'Author ID',
+                                            'rules' => 'trim|required|integer'
+                                         ),
+                                    array(
+                                            'field' => 'publishers_id',
+                                            'label' => 'Publishers ID',
+                                            'rules' => 'trim|required|integer'
+                                         )
+								);
+$config['books/_destroy'] = array(
+                                    array(
+                                            'field' => 'id',
+                                            'label' => 'ID',
+                                            'rules' => 'trim|required|integer'
+                                         )
+                                    );                      
+$config['authors/_update'] = array(	array(		'field' => 'id',		'label' => '{strtoupper(id)}',		'rules' => 'trim|required|integer'	),	array(		'field' => 'name',		'label' => '{strtoupper(name)}',		'rules' => 'trim|required'	),	array(		'field' => 'surname',		'label' => '{strtoupper(surname)}',		'rules' => 'trim|required'	));$config['authors/_create'] = array(	array(		'field' => 'name',		'label' => '{strtoupper(name)}',		'rules' => 'trim|required'	)	array(		'field' => 'surname',		'label' => '{strtoupper(surname)}',		'rules' => 'trim|required'	));$config['authors/_delete'] = array(	array(		'field' => 'id',		'label' => '{strtoupper(id)}',		'rules' => 'trim|required|integer'	)	array(		'field' => 'name',		'label' => '{strtoupper(name)}',		'rules' => 'trim|required|integer'	)	array(		'field' => 'surname',		'label' => '{strtoupper(surname)}',		'rules' => 'trim|required|integer'	));

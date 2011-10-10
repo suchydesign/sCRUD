@@ -1,0 +1,24 @@
+sCRUD Generator
+
+treba nakopirovat priecinok /application do codeigniteru
+su tam volake zmeny, v config/database.php su dve konekcie, obe su potrebne
+v config/routes.php uz su nastavene routy pre spravne fungovanie
+config/form_validation.php sa generuje sam
+core/MY_Model.php upraveny model od ktoreho dedia ostatne, poskytuje crud funkcionalitu + nieco malo navyse
+hlavny controller je nastaveny na controller/scrud_generator.php
+pre vygenerovanie staci mat vytvorenu databazu s existujucimi tabulkami, ist na hlavny controller
+zaklikat tabulky pre ktore chcem vygenerovat a nechat vygenerovat
+pre kazdu tabulku sa vytvori jeden controller, jeden model a jeden adresar so sablonami
+controller obsahuje metody index, show, edit, new_one ktore su zive linky, a dalsie create, update, destroy ktore sa vykonaju v pripade prislusnej post akcie
+
+no nic nechce sa mi vysvetlovat, snad je ten vygenerovany kod dostatocne prehladny.
+co sa tyka samotneho generatora, ten je spackany narychlo a je to cele taka prva pre-alpha
+verzia aby som vyskusal ci to funguje. pravdepodobne to refactorujem a vytunim aj funkcionalitu,
+doplnim komentare, nech sa v tom vyznaju vsetci a tak.
+uvital by som kritiku, ak nejaku budete mat.
+
+PS: jasne a aby som nezabudol, najlepsie to funguje ak apache bezi pod vasim userom, pripadne ak mate inak vysporiadane prepisovanie a vytvaranie fajlov.
+
+Suchy http://twitter.com/#!/suchydesign
+
+
