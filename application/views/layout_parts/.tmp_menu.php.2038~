@@ -1,2 +1,0 @@
-	<li><?=anchor(authors, Authors); ?></li>
-	<li><?=anchor(bookmarks, Bookmarks); ?></li>
