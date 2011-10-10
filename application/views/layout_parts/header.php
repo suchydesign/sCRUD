@@ -86,8 +86,9 @@ table td {
 	padding: 5px;
 }
 
-ul#menu {
+ul#menu li {
 	display: inline-block;
+	padding: 2px 6px;
 }
 
 .center {text-align:center;}
