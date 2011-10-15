@@ -1,5 +1,9 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+/**
+ * Scrud_generator class
+ * generate models, controller, views and validations for database tables
+ */
 class Scrud_generator extends CI_Controller 
 {
 	public function __construct()
