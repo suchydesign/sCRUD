@@ -172,6 +172,7 @@ class {$names['modelName']} extends MY_Model
 	
 	private function _generateViews($names)
 	{
+		$this->load->helper('formd');
 		$fileName = strtolower($names['controllerName']);
 		if(!is_dir(APPPATH . 'views/' . $fileName))
 			mkdir(APPPATH . 'views/' . $fileName);
@@ -192,19 +193,25 @@ class {$names['modelName']} extends MY_Model
 	<?php endif; ?>
 	<?=validation_errors(); ?>
 </div>
-<table>	
-	<?php if(!empty(\${$names['varName']})) foreach(\${$names['varName']}[0] as \$key => \$value): ?>
-	<?=form_open(current_url()); ?>
-	<?php if(\$key == 'id'): ?>
-		<?=form_input_by_type(\${$names['varName']}DataTypes[\$key], \$key, \$value); ?>
-	<?php else: ?>
-	<tr>
-		<th><?=form_label(\$key, \$key); ?></th>
-		<td><?=form_input_by_type(\${$names['varName']}DataTypes[\$key], \$key, (\$this->input->post(\$key) ? \$this->input->post(\$key) : \$value)); ?></td>
-	</tr>
-	<?php endif; ?>
-	<?php endforeach; ?>
-	<tr>
+<table>\n";
+	$this->load->model($names['modelName']);
+	$result = $this->$names['modelName']->get_data_types();
+	$data .= "	<?=form_open(current_url()); ?>\n";
+	if(!empty($result)) foreach($result as $key => $value)
+	{
+		if($key == 'id')
+		{
+			$data .= "		<?=" . form_input_type($value, $key) . "('$key', \${$names['varName']}[0]->$key); ?>\n";
+		}
+		else 
+		{
+			$data .="	<tr>\n";
+			$data .= "		<th>" . form_label($key, $key) . "</th>\n";
+			$data .= "		<td><?=" . form_input_type($value, $key) . "('$key', (\$this->input->post('$key') ? \$this->input->post('$key') : \${$names['varName']}[0]->$key)); ?></td>
+	</tr>\n";
+		}
+	}
+	$data .= "	<tr>
 		<td colspan=\"2\"><?=form_submit('update', 'Update'); ?></td>
 	</tr>
 	<?=form_close(); ?>
@@ -212,6 +219,7 @@ class {$names['modelName']} extends MY_Model
 <ul>
 	<li><?=anchor('{$names['varName']}', 'View all'); ?></li>
 	<li><?=anchor('{$names['varName']}/' . \${$names['varName']}[0]->id, 'View'); ?></li>
+	<li><?=anchor('{$names['varName']}/new', 'New'); ?></li>
 	<li><?php 
 		echo form_open(site_url('{$names['varName']}'));
 		echo form_hidden('id', \${$names['varName']}[0]->id);
@@ -234,19 +242,21 @@ class {$names['modelName']} extends MY_Model
 	<?php endif; ?>
 	<?=validation_errors(); ?>
 </div>
-<table>
-	<tr>
-	<?php if(!empty(\${$names['varName']})) foreach(\${$names['varName']}[0] as \$k => \$v): ?>
-		<th><?=\$k; ?></th>
-	<?php endforeach; ?>
-		<th colspan=\"3\">actions</th>
+<table>\n";
+	$data .= "	<tr>\n";
+	if(!empty($result)) foreach($result as $key => $value)
+	{
+		$data .= "		<th>$key</th>\n";
+	}
+	$data .= "		<th colspan=\"3\">actions</th>
 	</tr>
 	<?php foreach(\${$names['varName']} as \$_{$names['varName']}): ?>
-	<tr>
-		<?php foreach(\$_{$names['varName']} as \$col): ?>
-		<td><?=\$col; ?></td>
-		<?php endforeach; ?>
-		<td><?=anchor('{$names['varName']}/' . \$_{$names['varName']}->id, 'view'); ?></td>
+	<tr>\n";
+		if(!empty($result)) foreach($result as $key => $value)
+		{
+			$data .= "		<td><?=\$_{$names['varName']}->$key; ?></td>\n";
+		}
+		$data .= "		<td><?=anchor('{$names['varName']}/' . \$_{$names['varName']}->id, 'view'); ?></td>
 		<td><?=anchor('{$names['varName']}/edit/' . \$_{$names['varName']}->id, 'edit'); ?></td>
 		<td><?php 
 			echo form_open(current_url());
@@ -276,19 +286,21 @@ class {$names['modelName']} extends MY_Model
 	<?php endif; ?>
 	<?=validation_errors(); ?>
 </div>
-<table>
-	<?php if(!empty(\${$names['varName']}DataTypes)) foreach(\${$names['varName']}DataTypes as \$key => \$value): ?>
-	<?=form_open(current_url()); ?>
-	<?php if(\$key == 'id'): ?>
-		<?=form_input_by_type(\${$names['varName']}DataTypes[\$key], \$key, \$value); ?>
-	<?php else: ?>
-	<tr>
-		<th><?=form_label(\$key, \$key); ?></th>
-		<td><?=form_input_by_type(\${$names['varName']}DataTypes[\$key], \$key, (\$this->input->post(\$key) ? \$this->input->post(\$key) : '')); ?></td>
-	</tr>
-	<?php endif; ?>
-	<?php endforeach; ?>
-	<tr>
+<table>\n";
+	$this->load->model($names['modelName']);
+	$result = $this->$names['modelName']->get_data_types();
+	$data .= "	<?=form_open(current_url()); ?>\n";
+	if(!empty($result)) foreach($result as $key => $value)
+	{
+		if($key != 'id')
+		{
+			$data .="	<tr>\n";
+			$data .= "		<th>" . form_label($key, $key) . "</th>\n";
+			$data .= "		<td><?=" . form_input_type($value, $key) . "('$key'); ?></td>
+		</tr>\n";
+		}
+	}
+	$data .= "	<tr>
 		<td colspan=\"2\"><?=form_submit('create', 'Create'); ?></td>
 	</tr>
 	<?=form_close(); ?>
@@ -305,17 +317,23 @@ class {$names['modelName']} extends MY_Model
 <?php \$this->load->view('layout_parts/menu'); ?>
 </ul>
 <h2>Show</h2>
-<table>	
-	<?php if(!empty(\${$names['varName']})) foreach(\${$names['varName']}[0] as \$key => \$value): ?>
-	<tr>
-		<th><?=\$key; ?></th>
-		<td><?=\$value; ?></td>
-	</tr>
-	<?php endforeach; ?>
+<table>\n";
+	$this->load->model($names['modelName']);
+	$result = $this->$names['modelName']->get_data_types();
+	$data .= "	<?=form_open(current_url()); ?>\n";
+	if(!empty($result)) foreach($result as $key => $value)
+	{
+		$data .="	<tr>\n";
+		$data .= "		<th>$key</th>\n";
+		$data .= "		<td><?=\${$names['varName']}[0]->$key; ?></td>
+	</tr>\n";
+	}
+	$data .= "
 </table>
 <ul>
 	<li><?=anchor('{$names['varName']}', 'View all'); ?></li>
 	<li><?=anchor('{$names['varName']}/edit/' . \${$names['varName']}[0]->id, 'Edit'); ?></li>
+	<li><?=anchor('{$names['varName']}/new', 'New'); ?></li>
 	<li><?php 
 		echo form_open(site_url('{$names['varName']}'));
 		echo form_hidden('id', \${$names['varName']}[0]->id);
@@ -341,13 +359,13 @@ class {$names['modelName']} extends MY_Model
 			$data .= "		'field' => '{$k}',\n";
 			$data .= "		'label' => '{$k}',\n";
 			if($k == 'id')
-				$data .= "		'rules' => 'trim|required|integer'\n";
+				$data .= "		'rules' => 'trim|required|integer|xss_clean'\n";
 			elseif($v == 'tinyint' or $v == 'smallint' or $v == 'mediumint' or $v == 'int' or $v == 'bigint')
-				$data .= "		'rules' => 'trim|required|integer'\n";
+				$data .= "		'rules' => 'trim|required|integer|xss_clean'\n";
 			elseif($v == 'decimal' or $v == 'float' or $v == 'double' or $v == 'real')
-				$data .= "		'rules' => 'trim|required|numeric'\n";
+				$data .= "		'rules' => 'trim|required|numeric|xss_clean'\n";
 			else
-				$data .= "		'rules' => 'trim|required'\n";
+				$data .= "		'rules' => 'trim|required|xss_clean'\n";
 			$data .= "	)";	
 			
 			if(array_key_exists('id', $dataTypes))
@@ -379,11 +397,11 @@ class {$names['modelName']} extends MY_Model
 				$data .= "		'field' => '{$k}',\n";
 				$data .= "		'label' => '{$k}',\n";
 				if($v == 'tinyint' or $v == 'smallint' or $v == 'mediumint' or $v == 'int' or $v == 'bigint')
-					$data .= "		'rules' => 'trim|required|integer'\n";
+					$data .= "		'rules' => 'trim|required|integer|xss_clean'\n";
 				elseif($v == 'decimal' or $v == 'float' or $v == 'double' or $v == 'real')
-					$data .= "		'rules' => 'trim|required|numeric'\n";
+					$data .= "		'rules' => 'trim|required|numeric|xss_clean'\n";
 				else
-					$data .= "		'rules' => 'trim|required'\n";
+					$data .= "		'rules' => 'trim|required|xss_clean'\n";
 				$data .= "	)";
 				
 				if(array_key_exists('id', $dataTypes))
@@ -409,7 +427,7 @@ class {$names['modelName']} extends MY_Model
 		$data .= "	array(\n";
 		$data .= "		'field' => 'id',\n";
 		$data .= "		'label' => 'id',\n";
-		$data .= "		'rules' => 'trim|required|integer'\n";
+		$data .= "		'rules' => 'trim|required|integer|xss_clean'\n";
 		$data .= "	)\n";			
 		$data .= ");\n";
 		//print_r($data);

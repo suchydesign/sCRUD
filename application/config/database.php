@@ -48,8 +48,8 @@ $active_group = 'default';
 $active_record = TRUE;
 
 $db['default']['hostname'] = 'localhost';
-$db['default']['username'] = 'bookshelf';
-$db['default']['password'] = 'bookshelf_pwd';
+$db['default']['username'] = 'root';
+$db['default']['password'] = 'toor';
 $db['default']['database'] = 'bookshelf';
 $db['default']['dbdriver'] = 'mysql';
 $db['default']['dbprefix'] = '';
@@ -64,8 +64,8 @@ $db['default']['autoinit'] = TRUE;
 $db['default']['stricton'] = FALSE;
 
 $db['info_schema']['hostname'] = 'localhost';
-$db['info_schema']['username'] = 'bookshelf';
-$db['info_schema']['password'] = 'bookshelf_pwd';
+$db['info_schema']['username'] = 'root';
+$db['info_schema']['password'] = 'toor';
 $db['info_schema']['database'] = 'information_schema';
 $db['info_schema']['dbdriver'] = 'mysql';
 $db['info_schema']['dbprefix'] = '';

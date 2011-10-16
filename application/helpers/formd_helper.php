@@ -19,3 +19,23 @@ if ( ! function_exists('form_input_by_type'))
 			}
 	}
 }
+
+if ( ! function_exists('form_input_type'))
+{
+	function form_input_type($dataType, $data = '')
+	{
+		if($data == 'id')
+			return "form_hidden";
+		else
+			switch($dataType)
+			{
+				case 'tinytext':
+				case 'mediumtext':	
+				case 'text': 
+				case 'longtext':
+					return "form_textarea";
+				default:
+					return "form_input";
+			}
+	}
+}
