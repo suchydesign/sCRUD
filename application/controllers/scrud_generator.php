@@ -342,10 +342,32 @@ class {$names['modelName']} extends MY_Model
 	{
 		if($key != 'id')
 		{
-			$data .="	<tr>\n";
-			$data .= "		<th>" . form_label($key, $key) . "</th>\n";
-			$data .= "		<td><?=" . form_input_type($value, $key) . "('$key'); ?></td>
-		</tr>\n";
+			$bt = substr($key, 0, -3);
+			if(in_array($bt, $belongsArray))
+			{
+				$data .= "
+	<tr>
+		<th>" . form_label($key, $key) . "</th>
+		<td>
+			<select name=\"$key\">
+			<?php if(!empty(\${$bt})): ?>
+			<?php foreach(\${$bt} as \$_{$bt}): ?>
+				<option value=\"<?=\$_{$bt}->id; ?>\"><?=\$_{$bt}->id; ?></option>
+			<?php endforeach; ?>
+			<?php else: ?>
+				<?=" . form_input_type($value, $key) . "('$key'); ?>
+			<?php endif; ?>
+			</select>
+		</td>
+	</tr>";
+			}
+			else
+			{
+				$data .="	<tr>\n";
+				$data .= "		<th>" . form_label($key, $key) . "</th>\n";
+				$data .= "		<td><?=" . form_input_type($value, $key) . "('$key'); ?></td>
+	</tr>\n";
+			}
 		}
 	}
 	$data .= "	<tr>
