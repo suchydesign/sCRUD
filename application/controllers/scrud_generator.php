@@ -25,14 +25,7 @@ class Scrud_generator extends CI_Controller
 		if($this->input->post('generate'))
 			foreach($_POST['tables'] as $table)
 			{
-				$lowercase = strtolower($table);
-				$names = array(
-					'controllerName' => ucfirst($lowercase),
-					'modelName' => ucfirst($lowercase) . '_model',
-					'viewsName' => $lowercase . '',
-					'varName' => $lowercase . '',
-					'tableName' => $table
-				);
+				$names = $this->_generate_names($table);
 				$this->_generateModel($names);
 				$this->_generateController($names);
 				$this->_generateViews($names);
@@ -40,9 +33,33 @@ class Scrud_generator extends CI_Controller
 			}
 	}
 	
+	private function _generate_names($table)
+	{
+		$lowercase = strtolower($table);
+		return $names = array(
+			'controllerName' => ucfirst($lowercase),
+			'modelName' => ucfirst($lowercase) . '_model',
+			'viewsName' => $lowercase . '',
+			'varName' => $lowercase . '',
+			'tableName' => $table
+		);
+	}
+	
 	private function _generateController($names)
 	{
 		$fileName = strtolower($names['controllerName']);
+		
+		$this->load->model($names['modelName'], $names['varName']);
+		$belongsTo = "";
+		$belongsToGetData = "";
+		$belongsArray = $this->$names['varName']->get_belongs_to();
+		if(!empty($belongsArray)) foreach($belongsArray as $bt)
+		{
+			$btNames = $this->_generate_names($bt);
+			$belongsTo .= "			\$this->load->model('{$btNames['modelName']}', '{$btNames['varName']}');\n";
+			$belongsToGetData .= "		\$data['{$btNames['varName']}'] = \$this->{$btNames['varName']}->all();\n";
+		}
+		
 		$data = 
 "<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
@@ -53,9 +70,12 @@ class {$names['controllerName']} extends CI_Controller
 	public function __construct()
 	{
 		parent::__construct();
-		\$this->load->helper('formd');
 		\$this->load->library('form_validation');
 		\$this->load->model('{$names['modelName']}', '{$names['varName']}');
+		foreach(\$this->{$names['varName']}->get_belongs_to() as \$bt)
+		{\n" 
+		. $belongsTo . 			
+		"		}
 	}
 
 	public function index()
@@ -72,8 +92,9 @@ class {$names['controllerName']} extends CI_Controller
 		if(\$this->_create())
 			\$data['success'] = \$this->_editStatus;
 			
-		\$data['{$names['varName']}DataTypes'] = \$this->{$names['varName']}->get_data_types();
-		\$this->load->view('{$names['viewsName']}/new_one', \$data);
+		\$data['{$names['varName']}DataTypes'] = \$this->{$names['varName']}->get_data_types();\n"
+		. $belongsToGetData .
+		"		\$this->load->view('{$names['viewsName']}/new_one', \$data);
 	}
 	
 	protected function _create()
@@ -104,8 +125,9 @@ class {$names['controllerName']} extends CI_Controller
 		if(\$this->_update())
 			\$data['success'] = \$this->_editStatus;
 			
-		\$data['{$names['varName']}DataTypes'] = \$this->{$names['varName']}->get_data_types();
-		if(\$data['{$names['varName']}'] = \$this->{$names['varName']}->find(array('id' => \$id)))
+		\$data['{$names['varName']}DataTypes'] = \$this->{$names['varName']}->get_data_types();\n"
+		. $belongsToGetData .
+		"		if(\$data['{$names['varName']}'] = \$this->{$names['varName']}->find(array('id' => \$id)))
 			\$this->load->view('{$names['viewsName']}/edit', \$data);
 		else
 			show_404(current_url());
@@ -161,6 +183,7 @@ class {$names['modelName']} extends MY_Model
         parent::__construct();
 		\$this->tableName = '{$names['tableName']}';
 		\$this->_set_data_types();
+		\$this->_set_belongs_to();
     }
 }
 
@@ -176,6 +199,9 @@ class {$names['modelName']} extends MY_Model
 		$fileName = strtolower($names['controllerName']);
 		if(!is_dir(APPPATH . 'views/' . $fileName))
 			mkdir(APPPATH . 'views/' . $fileName);
+		
+		$this->load->model($names['modelName'], $names['varName']);
+		$belongsArray = $this->$names['varName']->get_belongs_to();
 		
 		$data = "";
 		$data .= "	<li><?=anchor('{$fileName}', '{$names['controllerName']}'); ?></li>\n";
@@ -205,10 +231,32 @@ class {$names['modelName']} extends MY_Model
 		}
 		else 
 		{
-			$data .="	<tr>\n";
-			$data .= "		<th>" . form_label($key, $key) . "</th>\n";
-			$data .= "		<td><?=" . form_input_type($value, $key) . "('$key', (\$this->input->post('$key') ? \$this->input->post('$key') : \${$names['varName']}[0]->$key)); ?></td>
+			$bt = substr($key, 0, -3);
+			if(in_array($bt, $belongsArray))
+			{
+				$data .= "
+	<tr>
+		<th>" . form_label($key, $key) . "</th>
+		<td>
+			<select name=\"$key\">
+			<?php if(!empty(\${$bt})): ?>
+			<?php foreach(\${$bt} as \$_{$bt}): ?>
+				<option value=\"<?=\$_{$bt}->id; ?>\" <?php if(\$_{$bt}->id == (\$this->input->post('$key') ? \$this->input->post('$key') : \${$names['varName']}[0]->$key)) echo \"selected=\\\"selected\\\"\"; ?>><?=\$_{$bt}->id; ?></option>
+			<?php endforeach; ?>
+			<?php else: ?>
+				<?=" . form_input_type($value, $key) . "('$key', (\$this->input->post('$key') ? \$this->input->post('$key') : \${$names['varName']}[0]->$key)); ?>
+			<?php endif; ?>
+			</select>
+		</td>
+	</tr>";
+			}
+			else
+			{
+				$data .="	<tr>\n";
+				$data .= "		<th>" . form_label($key, $key) . "</th>\n";
+				$data .= "		<td><?=" . form_input_type($value, $key) . "('$key', (\$this->input->post('$key') ? \$this->input->post('$key') : \${$names['varName']}[0]->$key)); ?></td>
 	</tr>\n";
+			}
 		}
 	}
 	$data .= "	<tr>

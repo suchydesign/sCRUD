@@ -5,6 +5,7 @@ class MY_Model extends CI_Model
 	protected $tableName = '';
 	protected $pk = 'id';
 	protected $dataTypes = array();
+	protected $belongsTo = array();
 
 	public function __construct()
     {
@@ -67,6 +68,18 @@ class MY_Model extends CI_Model
 	public function get_data_types()
 	{
 		return $this->dataTypes;
+	}
+	
+	protected function _set_belongs_to()
+	{
+		foreach($this->get_data_types() as $k => $v)
+			if(substr($k, -3, 3) == '_id')	
+				array_push($this->belongsTo, substr($k, 0, -3));
+	}
+	
+	public function get_belongs_to()
+	{
+		return $this->belongsTo;
 	}
 
 }
