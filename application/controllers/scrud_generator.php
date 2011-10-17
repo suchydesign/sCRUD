@@ -251,16 +251,16 @@ class {$names['modelName']} extends MY_Model
 				$data .= "
 	<tr>
 		<th>" . form_label($key, $key) . "</th>
-		<td>
-			<select name=\"$key\">
+		<td>			
 			<?php if(!empty(\${$bt})): ?>
+			<select name=\"$key\">
 			<?php foreach(\${$bt} as \$_{$bt}): ?>
 				<option value=\"<?=\$_{$bt}->id; ?>\" <?php if(\$_{$bt}->id == (\$this->input->post('$key') ? \$this->input->post('$key') : \${$names['varName']}[0]->$key)) echo \"selected=\\\"selected\\\"\"; ?>><?=\$_{$bt}->id; ?></option>
 			<?php endforeach; ?>
+			</select>
 			<?php else: ?>
 				<?=" . form_input_type($value, $key) . "('$key', (\$this->input->post('$key') ? \$this->input->post('$key') : \${$names['varName']}[0]->$key)); ?>
 			<?php endif; ?>
-			</select>
 		</td>
 	</tr>";
 			}
@@ -363,15 +363,15 @@ class {$names['modelName']} extends MY_Model
 	<tr>
 		<th>" . form_label($key, $key) . "</th>
 		<td>
-			<select name=\"$key\">
 			<?php if(!empty(\${$bt})): ?>
+			<select name=\"$key\">
 			<?php foreach(\${$bt} as \$_{$bt}): ?>
 				<option value=\"<?=\$_{$bt}->id; ?>\"><?=\$_{$bt}->id; ?></option>
 			<?php endforeach; ?>
-			<?php else: ?>
-				<?=" . form_input_type($value, $key) . "('$key'); ?>
-			<?php endif; ?>
 			</select>
+			<?php else: ?>
+				<?=" . form_input_type($value, $key) . "('$key', (\$this->input->post('$key') ? \$this->input->post('$key') : '')); ?>
+			<?php endif; ?>
 		</td>
 	</tr>";
 			}
@@ -379,7 +379,7 @@ class {$names['modelName']} extends MY_Model
 			{
 				$data .="	<tr>\n";
 				$data .= "		<th>" . form_label($key, $key) . "</th>\n";
-				$data .= "		<td><?=" . form_input_type($value, $key) . "('$key'); ?></td>
+				$data .= "		<td><?=" . form_input_type($value, $key) . "('$key', (\$this->input->post('$key') ? \$this->input->post('$key') : '')); ?></td>
 	</tr>\n";
 			}
 		}
