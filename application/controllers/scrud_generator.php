@@ -6,9 +6,11 @@
  */
 class Scrud_generator extends CI_Controller 
 {
+	protected $dir = '';
 	public function __construct()
     {
         parent::__construct();
+		$this->dir = 'admin/';
 		//$this->output->enable_profiler(TRUE);
     }
 
@@ -16,7 +18,7 @@ class Scrud_generator extends CI_Controller
 	{
 		$this->_generate();		
 		$q = $this->db->query('show tables');
-		$data['tables'] = $q->result();		
+		$data['tables'] = $q->result();
 		$this->load->view('scrud_generator/index', $data);
 	}
 	
@@ -49,6 +51,10 @@ class Scrud_generator extends CI_Controller
 	{
 		$fileName = strtolower($names['controllerName']);
 		
+		if($this->dir != '')
+			if(!is_dir(APPPATH . 'controllers/' . trim($this->dir, '/')))
+				mkdir(APPPATH . 'controllers/' . trim($this->dir, '/'));
+		
 		$this->load->model($names['modelName'], $names['varName']);
 		$belongsTo = "";
 		$belongsToGetData = "";
@@ -56,7 +62,7 @@ class Scrud_generator extends CI_Controller
 		if(!empty($belongsArray)) foreach($belongsArray as $bt)
 		{
 			$btNames = $this->_generate_names($bt);
-			$belongsTo .= "			\$this->load->model('{$btNames['modelName']}', '{$btNames['varName']}');\n";
+			$belongsTo .= "		\$this->load->model('{$btNames['modelName']}', '{$btNames['varName']}');\n";
 			$belongsToGetData .= "		\$data['{$btNames['varName']}'] = \$this->{$btNames['varName']}->all();\n";
 		}
 		
@@ -72,10 +78,9 @@ class {$names['controllerName']} extends CI_Controller
 		parent::__construct();
 		\$this->load->library('form_validation');
 		\$this->load->model('{$names['modelName']}', '{$names['varName']}');
-		foreach(\$this->{$names['varName']}->get_belongs_to() as \$bt)
-		{\n" 
+		\n" 
 		. $belongsTo . 			
-		"		}
+		"
 	}
 
 	public function index()
@@ -84,7 +89,7 @@ class {$names['controllerName']} extends CI_Controller
 			\$data['success'] = \$this->_editStatus;
 			
 		\$data['{$names['varName']}'] = \$this->{$names['varName']}->all();
-		\$this->load->view('{$names['viewsName']}/index', \$data);
+		\$this->load->view('{$this->dir}{$names['viewsName']}/index', \$data);
 	}
 	
 	public function new_one()
@@ -94,7 +99,7 @@ class {$names['controllerName']} extends CI_Controller
 			
 		\$data['{$names['varName']}DataTypes'] = \$this->{$names['varName']}->get_data_types();\n"
 		. $belongsToGetData .
-		"		\$this->load->view('{$names['viewsName']}/new_one', \$data);
+		"		\$this->load->view('{$this->dir}{$names['viewsName']}/new_one', \$data);
 	}
 	
 	protected function _create()
@@ -115,7 +120,7 @@ class {$names['controllerName']} extends CI_Controller
 	public function show(\$id)
 	{
 		if(\$data['{$names['varName']}'] = \$this->{$names['varName']}->find(array('id' => \$id)))
-			\$this->load->view('{$names['viewsName']}/show', \$data);
+			\$this->load->view('{$this->dir}{$names['viewsName']}/show', \$data);
 		else
 			show_404(current_url());
 	}
@@ -128,7 +133,7 @@ class {$names['controllerName']} extends CI_Controller
 		\$data['{$names['varName']}DataTypes'] = \$this->{$names['varName']}->get_data_types();\n"
 		. $belongsToGetData .
 		"		if(\$data['{$names['varName']}'] = \$this->{$names['varName']}->find(array('id' => \$id)))
-			\$this->load->view('{$names['viewsName']}/edit', \$data);
+			\$this->load->view('{$this->dir}{$names['viewsName']}/edit', \$data);
 		else
 			show_404(current_url());
 	}
@@ -165,14 +170,14 @@ class {$names['controllerName']} extends CI_Controller
 }
 
 /* End of file {$fileName}.php */
-/* Location: ./application/controllers/{$fileName}.php */";
+/* Location: ./application/controllers/{$this->dir}{$fileName}.php */";
 		
-		file_put_contents(APPPATH . 'controllers/' . $fileName. '.php', $data);
+		file_put_contents(APPPATH . 'controllers/' . $this->dir . $fileName. '.php', $data);
 	}
 	
 	private function _generateModel($names)
 	{
-		$fileName = strtolower($names['modelName']);
+		$fileName = strtolower($names['modelName']);		
 		$data = 
 "<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
@@ -197,20 +202,29 @@ class {$names['modelName']} extends MY_Model
 	{
 		$this->load->helper('formd');
 		$fileName = strtolower($names['controllerName']);
-		if(!is_dir(APPPATH . 'views/' . $fileName))
-			mkdir(APPPATH . 'views/' . $fileName);
+		
+		if($this->dir != '')
+			if(!is_dir(APPPATH . 'views/' . trim($this->dir, '/')))
+				mkdir(APPPATH . 'views/' . trim($this->dir, '/'));
+				
+		if($this->dir != '')
+			if(!is_dir(APPPATH . 'views/' . $this->dir . '/' . 'layout_parts'))
+				mkdir(APPPATH . 'views/' . $this->dir . '/' . 'layout_parts');
+		
+		if(!is_dir(APPPATH . 'views/' . $this->dir . $fileName))
+			mkdir(APPPATH . 'views/' . $this->dir . $fileName);
 		
 		$this->load->model($names['modelName'], $names['varName']);
 		$belongsArray = $this->$names['varName']->get_belongs_to();
 		
 		$data = "";
-		$data .= "	<li><?=anchor('{$fileName}', '{$names['controllerName']}'); ?></li>\n";
-		file_put_contents(APPPATH . 'views/layout_parts/menu.php', $data, FILE_APPEND | LOCK_EX);
+		$data .= "	<li><?=anchor('{$this->dir}{$fileName}', '{$names['controllerName']}'); ?></li>\n";
+		file_put_contents(APPPATH . 'views/' . $this->dir . 'layout_parts/menu.php', $data, FILE_APPEND | LOCK_EX);
 		
 		$data = 
 "<?php \$this->load->view('layout_parts/header'); ?>
 <ul id=\"menu\">
-<?php \$this->load->view('layout_parts/menu'); ?>
+<?php \$this->load->view('{$this->dir}layout_parts/menu'); ?>
 </ul>
 <h2>Edit</h2>
 <div id=\"error_message\">	
@@ -265,23 +279,23 @@ class {$names['modelName']} extends MY_Model
 	<?=form_close(); ?>
 </table>
 <ul>
-	<li><?=anchor('{$names['varName']}', 'View all'); ?></li>
-	<li><?=anchor('{$names['varName']}/' . \${$names['varName']}[0]->id, 'View'); ?></li>
-	<li><?=anchor('{$names['varName']}/new', 'New'); ?></li>
+	<li><?=anchor('{$this->dir}{$names['varName']}', 'View all'); ?></li>
+	<li><?=anchor('{$this->dir}{$names['varName']}/' . \${$names['varName']}[0]->id, 'View'); ?></li>
+	<li><?=anchor('{$this->dir}{$names['varName']}/new', 'New'); ?></li>
 	<li><?php 
-		echo form_open(site_url('{$names['varName']}'));
+		echo form_open(site_url('{$this->dir}{$names['varName']}'));
 		echo form_hidden('id', \${$names['varName']}[0]->id);
 		echo form_submit('delete', 'Delete');
 		echo form_close();
 	?></li>
 </ul>
 <?php \$this->load->view('layout_parts/footer'); ?>";
-		file_put_contents(APPPATH . 'views/' . $fileName . '/edit.php', $data);
+		file_put_contents(APPPATH . 'views/' . $this->dir . $fileName . '/edit.php', $data);
 		
 		$data = 
 "<?php \$this->load->view('layout_parts/header'); ?>
 <ul id=\"menu\">
-<?php \$this->load->view('layout_parts/menu'); ?>
+<?php \$this->load->view('{$this->dir}layout_parts/menu'); ?>
 </ul>
 <h2>List</h2>
 <div id=\"error_message\">	
@@ -304,8 +318,8 @@ class {$names['modelName']} extends MY_Model
 		{
 			$data .= "		<td><?=\$_{$names['varName']}->$key; ?></td>\n";
 		}
-		$data .= "		<td><?=anchor('{$names['varName']}/' . \$_{$names['varName']}->id, 'view'); ?></td>
-		<td><?=anchor('{$names['varName']}/edit/' . \$_{$names['varName']}->id, 'edit'); ?></td>
+		$data .= "		<td><?=anchor('{$this->dir}{$names['varName']}/' . \$_{$names['varName']}->id, 'view'); ?></td>
+		<td><?=anchor('{$this->dir}{$names['varName']}/edit/' . \$_{$names['varName']}->id, 'edit'); ?></td>
 		<td><?php 
 			echo form_open(current_url());
 			echo form_hidden('id', \$_{$names['varName']}->id);
@@ -316,16 +330,16 @@ class {$names['modelName']} extends MY_Model
 	<?php endforeach; ?>
 </table>
 <ul>
-	<li><?=anchor('{$names['varName']}', 'View all'); ?></li>
-	<li><?=anchor('{$names['varName']}/new', 'New'); ?></li>
+	<li><?=anchor('{$this->dir}{$names['varName']}', 'View all'); ?></li>
+	<li><?=anchor('{$this->dir}{$names['varName']}/new', 'New'); ?></li>
 </ul>
 <?php \$this->load->view('layout_parts/footer'); ?>";
-		file_put_contents(APPPATH . 'views/' . $fileName . '/index.php', $data);
+		file_put_contents(APPPATH . 'views/' . $this->dir . $fileName . '/index.php', $data);
 		
 		$data = 
 "<?php \$this->load->view('layout_parts/header'); ?>
 <ul id=\"menu\">
-<?php \$this->load->view('layout_parts/menu'); ?>
+<?php \$this->load->view('{$this->dir}layout_parts/menu'); ?>
 </ul>
 <h2>New</h2>
 <div id=\"error_message\">	
@@ -376,15 +390,15 @@ class {$names['modelName']} extends MY_Model
 	<?=form_close(); ?>
 </table>
 <ul>
-	<li><?=anchor('{$names['varName']}', 'View all'); ?></li>
+	<li><?=anchor('{$this->dir}{$names['varName']}', 'View all'); ?></li>
 </ul>
 <?php \$this->load->view('layout_parts/footer'); ?>";
-		file_put_contents(APPPATH . 'views/' . $fileName . '/new_one.php', $data);
+		file_put_contents(APPPATH . 'views/' . $this->dir . $fileName . '/new_one.php', $data);
 		
 		$data = 
 "<?php \$this->load->view('layout_parts/header'); ?>
 <ul id=\"menu\">
-<?php \$this->load->view('layout_parts/menu'); ?>
+<?php \$this->load->view('{$this->dir}layout_parts/menu'); ?>
 </ul>
 <h2>Show</h2>
 <table>\n";
@@ -401,18 +415,18 @@ class {$names['modelName']} extends MY_Model
 	$data .= "
 </table>
 <ul>
-	<li><?=anchor('{$names['varName']}', 'View all'); ?></li>
-	<li><?=anchor('{$names['varName']}/edit/' . \${$names['varName']}[0]->id, 'Edit'); ?></li>
-	<li><?=anchor('{$names['varName']}/new', 'New'); ?></li>
+	<li><?=anchor('{$this->dir}{$names['varName']}', 'View all'); ?></li>
+	<li><?=anchor('{$this->dir}{$names['varName']}/edit/' . \${$names['varName']}[0]->id, 'Edit'); ?></li>
+	<li><?=anchor('{$this->dir}{$names['varName']}/new', 'New'); ?></li>
 	<li><?php 
-		echo form_open(site_url('{$names['varName']}'));
+		echo form_open(site_url('{$this->dir}{$names['varName']}'));
 		echo form_hidden('id', \${$names['varName']}[0]->id);
 		echo form_submit('delete', 'Delete');
 		echo form_close();
 	?></li>
 </ul>
 <?php \$this->load->view('layout_parts/footer'); ?>";
-		file_put_contents(APPPATH . 'views/' . $fileName . '/show.php', $data);
+		file_put_contents(APPPATH . 'views/' . $this->dir . $fileName . '/show.php', $data);
 	}
 	
 	private function _generateValidation($names)

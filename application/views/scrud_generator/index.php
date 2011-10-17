@@ -1,6 +1,6 @@
 <?php $this->load->view('layout_parts/header'); ?>
 <ul id="menu">
-<?php $this->load->view('layout_parts/menu'); ?>
+<?php //$this->load->view('layout_parts/menu'); ?>
 </ul>
 <h2>Tables</h2>
 <table>
